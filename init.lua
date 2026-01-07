@@ -1,4 +1,16 @@
--- Basics
+-- local ffi = require("ffi")
+--
+-- ffi.cdef[[
+-- int add(int a, int b);
+-- ]]
+--
+-- local lib = ffi.load(vim.fn.stdpath("config") .. "/add.so")
+--
+-- print(lib.add(60, 9))
+
+-- basics
+vim.cmd.colorscheme("evening")
+vim.opt.termguicolors = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.tabstop=2
@@ -8,6 +20,55 @@ vim.opt.expandtab = true
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 
--- Terminal settings
+-- terminal settings
 vim.keymap.set('t', '<ESC>', [[<C-\><C-n>]], { silent = true })
+
+-- language settings
+-- general language settings
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false })
+  end,
+})
+vim.diagnostic.config({
+  virtual_text = true
+})
+local on_attach = function(_, bufnr)
+  local map = vim.keymap.set
+  local opts = { buffer = bufnr, silent = true }
+
+  map("n", "gd", vim.lsp.buf.definition, opts)
+  map("n", "gi", vim.lsp.buf.implementation, opts)
+  map("n", "gr", vim.lsp.buf.references, opts)
+  map("n", "K", vim.lsp.buf.hover, opts)
+end
+-- C
+vim.lsp.config("clangd", {
+  on_attach = on_attach
+})
+vim.lsp.enable("clangd")
+-- C#
+require("roslyn").setup({})
+vim.lsp.config("roslyn", {
+  on_attach = on_attach,
+  cmd = {
+    "dotnet",
+    "/home/wanted101/.config/nvim/roslyn_server/content/LanguageServer/linux-x64/Microsoft.CodeAnalysis.LanguageServer.dll",
+    "--logLevel",
+    "Information",
+    "--extensionLogDirectory", -- this property is required by the server
+    vim.fs.joinpath(vim.uv.os_tmpdir(), "roslyn_ls/logs"),
+    "--stdio",
+  },
+  settings = {
+    ["csharp|inlay_hints"] = {
+      csharp_enable_inlay_hints_for_implicit_object_creation = true,
+      csharp_enable_inlay_hints_for_implicit_variable_types = true,
+    },
+    ["csharp|code_lens"] = {
+      dotnet_enable_references_code_lens = true,
+    },
+  },
+})
+vim.lsp.enable("roslyn")
 

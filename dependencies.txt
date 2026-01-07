@@ -1,0 +1,3 @@
+luarocks
+clangd
+dotnet-10

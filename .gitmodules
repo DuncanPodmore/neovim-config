@@ -1,0 +1,6 @@
+[submodule "/home/wanted101/.config/nvim/pack/nvim/start/nvim-lspconfig"]
+	path = /home/wanted101/.config/nvim/pack/nvim/start/nvim-lspconfig
+	url = https://github.com/neovim/nvim-lspconfig
+[submodule "pack/nvim/start/roslyn.nvim"]
+	path = pack/nvim/start/roslyn.nvim
+	url = https://github.com/seblyng/roslyn.nvim
