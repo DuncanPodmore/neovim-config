@@ -1,3 +1,9 @@
 luarocks
 clangd
 dotnet-10
+
+# npm global packages:
+typescript 
+typescript-language-server
+vscode-langservers-extracted 
+@angular/language-server 

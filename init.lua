@@ -25,6 +25,7 @@ vim.keymap.set('t', '<ESC>', [[<C-\><C-n>]], { silent = true })
 
 -- language settings
 -- general language settings
+
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
     vim.diagnostic.open_float(nil, { focus = false })
@@ -42,11 +43,13 @@ local on_attach = function(_, bufnr)
   map("n", "gr", vim.lsp.buf.references, opts)
   map("n", "K", vim.lsp.buf.hover, opts)
 end
+
 -- C
 vim.lsp.config("clangd", {
   on_attach = on_attach
 })
 vim.lsp.enable("clangd")
+
 -- C#
 require("roslyn").setup({})
 vim.lsp.config("roslyn", {
@@ -72,3 +75,40 @@ vim.lsp.config("roslyn", {
 })
 vim.lsp.enable("roslyn")
 
+-- javascript, typescript, angular
+vim.lsp.config("ts_ls", {
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
+  end,
+})
+vim.lsp.config("eslint", {
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+        -- nvim-lspconfig defines a user command 
+        -- `LspEslintFixAll` :contentReference[oaicite:5]{index=5}
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "LspEslintFixAll",
+    })
+  end,
+})
+vim.lsp.config("angularls", {
+    on_new_config = function(new_config, new_root_dir)
+      -- Point probe locations at your workspace's node_modules
+      local node_modules = new_root_dir .. "/node_modules"
+      new_config.cmd = { 
+        "ngserver", 
+        "--stdio", 
+        "--tsProbeLocations", 
+        node_modules, 
+        "--ngProbeLocations", 
+        node_modules 
+      }
+    end,
+  on_attach = on_attach,
+})
+vim.lsp.enable("ts_ls")
+vim.lsp.enable("eslint")
+vim.lsp.enable("angularls")
